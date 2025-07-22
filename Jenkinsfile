@@ -36,24 +36,24 @@ pipeline {
                     $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'aws_creds'
                 ]])  {
-                    sh '''
+                    sh """
                       cd terraform
                       terraform apply -auto-approve
                       terraform output -raw private_key_pem > ${env.WORKSPACE}/ansible/grafana-key.pem
                       chmod 400 $WORKSPACE/ansible/grafana-key.pem
-                    '''
+                    """
                 }
             }
         }
 
         stage('Run Ansible Playbook') {
             steps {
-                sh '''
+                sh """
                   PUBLIC_IP=$(terraform -chdir=terraform output -raw public_ip)
                   echo "[grafana]" > ansible/inventory.ini
-                  echo "$PUBLIC_IP ansible_user=ubuntu ansible_ssh_private_key_file=$WORKSPACE/ansible/grafana-key.pem" >> ansible/inventory.ini
+                  echo "$PUBLIC_IP ansible_user=ubuntu ansible_ssh_private_key_file=${env.WORKSPACE}/ansible/grafana-key.pem" >> ansible/inventory.ini
                   ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
-                  '''
+                  """
             }
         }
     }
