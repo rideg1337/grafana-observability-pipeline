@@ -5,7 +5,7 @@ pipeline {
         // cred ID
         AWS_CREDENTIALS = 'aws_creds'
         // Ansible private key
-        ANSIBLE_PRIVATE_KEY = 'grafana-key.pem'
+        ANSIBLE_PRIVATE_KEY = '${env.WORKSPACE}/ansible/grafana-key.pem'
     }
 
     stages {
@@ -39,8 +39,8 @@ pipeline {
                     sh '''
                       cd terraform
                       terraform apply -auto-approve
-                      terraform output -raw private_key_pem > ../ansible/grafana-key.pem
-                      chmod 400 ../ansible/grafana-key.pem
+                      terraform output -raw private_key_pem > $WORKSPACE/ansible/grafana-key.pem
+                      chmod 400 $WORKSPACE/ansible/grafana-key.pem
                     '''
                 }
             }
@@ -51,7 +51,7 @@ pipeline {
                 sh '''
                   PUBLIC_IP=$(terraform -chdir=terraform output -raw public_ip)
                   echo "[grafana]" > ansible/inventory.ini
-                  echo "$PUBLIC_IP ansible_user=ubuntu ansible_ssh_private_key_file=ansible/grafana-key.pem" >> ansible/inventory.ini
+                  echo "$PUBLIC_IP ansible_user=ubuntu ansible_ssh_private_key_file=$WORKSPACE/ansible/grafana-key.pem" >> ansible/inventory.ini
                   ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
                   '''
             }
