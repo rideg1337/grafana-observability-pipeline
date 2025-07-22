@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "eu-central-1" 
+  region = "eu-central-1"
 }
 
 resource "tls_private_key" "main" {
@@ -43,12 +43,18 @@ resource "aws_security_group" "main" {
 }
 
 resource "aws_instance" "grafana" {
-  ami           = "ami-02003f9f0fde924ea" # Ubuntu 22.04 LTS
-  instance_type = "t2.micro"
-  key_name      = aws_key_pair.main.key_name
+  ami                    = "ami-02003f9f0fde924ea" # Ubuntu 22.04 LTS
+  instance_type          = "t2.micro"
+  key_name               = aws_key_pair.main.key_name
   vpc_security_group_ids = [aws_security_group.main.id]
 
   tags = {
     Name = "grafana-observability"
   }
+}
+
+resource "local_file" "private_key" {
+  content         = tls_private_key.main.private_key_pem
+  filename        = "${path.module}/grafana-key.pem"
+  file_permission = "0600"
 }
