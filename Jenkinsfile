@@ -39,7 +39,7 @@ pipeline {
                     sh '''
                       cd terraform
                       terraform apply -auto-approve
-                      terraform output -raw private_key_pem > $WORKSPACE/ansible/grafana-key.pem
+                      terraform output -raw private_key_pem > ${env.WORKSPACE}/ansible/grafana-key.pem
                       chmod 400 $WORKSPACE/ansible/grafana-key.pem
                     '''
                 }
