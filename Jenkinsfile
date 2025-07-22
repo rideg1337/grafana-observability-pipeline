@@ -51,7 +51,7 @@ pipeline {
                 sh """
                   PUBLIC_IP=$(terraform -chdir=terraform output -raw public_ip)
                   echo "[grafana]" > ansible/inventory.ini
-                  echo "$PUBLIC_IP ansible_user=ubuntu ansible_ssh_private_key_file=${env.WORKSPACE}/ansible/grafana-key.pem" >> ansible/inventory.ini
+                  echo "\$PUBLIC_IP ansible_user=ubuntu ansible_ssh_private_key_file=${env.WORKSPACE}/ansible/grafana-key.pem" >> ansible/inventory.ini
                   ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
                   """
             }
