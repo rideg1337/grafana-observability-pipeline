@@ -29,7 +29,7 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${env.AWS_CREDENTIALS}", usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                withAWS(credentials: 'aws_creds') {
                     sh '''
                       cd terraform
                       terraform apply -auto-approve
